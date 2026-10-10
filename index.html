@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPS - Demo Website</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#075985;color:white;padding:20px;text-align:center}
+header h1{margin:0}
+header p{margin:8px 0 0}
+main{max-width:650px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;margin-bottom:15px;border-radius:14px;box-shadow:0 2px 10px #00000010}
+h2{margin-top:0;color:#075985}
+button{background:#0284c7;color:white;border:0;border-radius:8px;padding:12px;margin:5px 3px;cursor:pointer}
+input{display:block;width:100%;padding:12px;margin:10px 0;border:1px solid #cbd5e1;border-radius:8px}
+.amounts{display:flex;flex-wrap:wrap;gap:5px}
+.amounts button{flex:1}
+.notice{font-size:13px;color:#64748b;line-height:1.5}
+#dashboard{display:none}
+.balance{font-size:30px;font-weight:bold;color:#15803d}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>KPS</h1>
+<p>Welcome to KPS Demo Website</p>
+</header>
+<main>
+<section class="card" id="register">
+<h2>Demo Registration</h2>
+<p>अपना नाम डालकर डेमो शुरू करें।</p>
+<input id="username" placeholder="अपना नाम लिखें">
+<button onclick="login()">Demo में प्रवेश करें</button>
+<p class="notice">यह केवल डेमो है। यहाँ असली पासवर्ड या बैंक की जानकारी न डालें।</p>
+</section>
+
+<section id="dashboard">
+<div class="card">
+<h2 id="welcome">नमस्ते!</h2>
+<p>डेमो बैलेंस</p>
+<div class="balance">₹0.00</div>
+<p class="notice">यह बैलेंस वास्तविक पैसा नहीं है।</p>
+<button onclick="showSection('add')">Add Money Demo</button>
+<button onclick="showSection('history')">Request History</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="card" id="add" style="display:none">
+<h2>Demo Request</h2>
+<p>राशि चुनें:</p>
+<div class="amounts">
+<button onclick="choose(100)">₹100</button>
+<button onclick="choose(200)">₹200</button>
+<button onclick="choose(500)">₹500</button>
+<button onclick="choose(1000)">₹1000</button>
+</div>
+<input type="number" id="custom" placeholder="या राशि लिखें (₹1–₹10000)">
+<button onclick="submitRequest()">Demo Request बनाएं</button>
+<p class="notice">कोई भुगतान नहीं होगा। यह केवल स्क्रीन पर डेमो रिकॉर्ड बनाता है।</p>
+</div>
+
+<div class="card" id="history" style="display:none">
+<h2>Demo History</h2>
+<div id="historyList">अभी कोई अनुरोध नहीं है।</div>
+</div>
+
+<div class="card">
+<h2>जानकारी</h2>
+<p>यह KPS का फ्रंट-एंड डेमो है।</p>
+<p class="notice">इस संस्करण में असली अकाउंट, सर्वर, स्थायी डेटाबेस, भुगतान या निकासी की सुविधा नहीं है। पेज रीफ्रेश करने पर डेमो रिकॉर्ड मिट सकते हैं।</p>
+</div>
+</section>
+</main>
+<footer>KPS Demo Website · For demonstration only</footer>
+
+<script>
+let requests=[];
+let selectedAmount=0;
+function login(){
+ const name=document.getElementById('username').value.trim();
+ if(!name){alert('कृपया अपना नाम लिखें।');return;}
+ document.getElementById('register').style.display='none';
+ document.getElementById('dashboard').style.display='block';
+ document.getElementById('welcome').textContent='नमस्ते, '+name+'!';
+}
+function logout(){
+ document.getElementById('dashboard').style.display='none';
+ document.getElementById('register').style.display='block';
+ document.getElementById('username').value='';
+}
+function showSection(id){
+ ['add','history'].forEach(x=>document.getElementById(x).style.display='none');
+ document.getElementById(id).style.display='block';
+ if(id==='history')renderHistory();
+}
+function choose(amount){
+ selectedAmount=amount;
+ document.getElementById('custom').value=amount;
+}
+function submitRequest(){
+ const amount=Number(document.getElementById('custom').value)||selectedAmount;
+ if(!Number.isFinite(amount)||amount<1||amount>10000){
+ alert('₹1 से ₹10000 तक की राशि डालें।');return;
+ }
+ requests.push({amount:amount,status:'Demo only'});
+ alert('डेमो अनुरोध बन गया। कोई असली भुगतान नहीं हुआ।');
+ document.getElementById('custom').value='';
+ selectedAmount=0;
+ renderHistory();
+}
+function renderHistory(){
+ const el=document.getElementById('historyList');
+ if(!requests.length){el.textContent='अभी कोई अनुरोध नहीं है।';return;}
+ el.innerHTML=requests.map((r,i)=>
+ '<p>अनुरोध '+(i+1)+' — ₹'+r.amount+' — '+r.status+'</p>'
+ ).join('');
+}
+</script>
+</body>
+</html>
